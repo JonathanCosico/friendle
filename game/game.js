@@ -45,7 +45,6 @@ function evaluateGuess(word, guess) {
       wrongLetters.push(ch);
     }
   }
-  console.log(result, wrongLetters);
 
   return { result: result.join(''), wrongLetters: wrongLetters.join('') };
 }
