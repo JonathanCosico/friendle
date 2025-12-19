@@ -20,12 +20,9 @@ module.exports = {
         });
         await thread.send(getInitialBoard(word));
 
-        console.log(`Created thread: ${thread.name}`);
-
         // send ephemeral message to user that thread was created
         await interaction.reply({content: `Thread created: ${thread.name}`, flags: MessageFlags.Ephemeral});
 
-        console.log('created thread and sent ephemeral message to user');
         // create message collector to listen for guesses in thread only if message is a valid guess (same length as word)
         const collectorFilter = (m) => m.content.length === word.length && m.author.id !== interaction.client.user.id;
         const collector = thread.createMessageCollector({filter: collectorFilter});
