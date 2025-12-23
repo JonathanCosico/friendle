@@ -32,10 +32,10 @@ module.exports = {
             const {correct, result, wrongLetters} = getResult(word, message.content.toLowerCase());
             wrongLetters.split('').forEach((ch) => usedLetters.add(ch));
             if (correct) {
+                collector.stop();
                 thread.send({files: ["assets/yippee-happy.gif"]});
                 thread.send(`The word was ${word}.`);
                 thread.send(result);
-                collector.stop();
             } else {
                 thread.send(result);
                 thread.send(`Wrong letters: ${Array.from(usedLetters).sort().join(', ')}`);
