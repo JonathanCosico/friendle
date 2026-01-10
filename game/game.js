@@ -2,7 +2,7 @@ function getResult(word, guess) {
   // evaluate the guess and return the emoji-formatted result
   const { result, wrongLetters } = evaluateGuess(word, guess);
 
-  return {correct: result === 'G'.repeat(word.length), result: formatResult(result), wrongLetters: wrongLetters};
+  return {correct: result === 'G'.repeat(word.length), result: result, wrongLetters: wrongLetters};
 }
 
 function getInitialBoard(word) {
@@ -61,5 +61,22 @@ function formatResult(result) {
   }
 }
 
-module.exports = { getResult, getInitialBoard };
+// build the string representation of the keyboard with used letters colored according to their status
+function printBoard(usedLetters) {
+  const KEYBOARD_LAYOUT = [" qwertyuiop", "  asdfghjkl", "   zxcvbnm"];
+  const GREEN = "\x1b[2;32m";
+  const YELLOW = "\x1b[2;33m";
+  const GREY = "\x1b[2;30m";
+  const RESET = "\x1b[0m";
+  return KEYBOARD_LAYOUT.map(row => {
+    return row.split('').map(ch => {
+      const status = usedLetters.get(ch);
+      if (status === 'G') return `${GREEN}${ch}${RESET}`;
+      if (status === 'Y') return `${YELLOW}${ch}${RESET}`;
+      if (status === 'X') return `${GREY}${ch}${RESET}`;
+      return ch;
+    }).join('');
+  }).join('\n');
+}
 
+module.exports = { getResult, getInitialBoard, formatResult, printBoard };
