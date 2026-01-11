@@ -2,13 +2,13 @@ const game = require('./game');
 const getResult = game.getResult;
 
 const tests = [
-  ['apple', 'apply', '🟩🟩🟩🟩⬛️'],
-  ['abcde', 'eabcd', '🟨🟨🟨🟨🟨'],
-  ['apple', 'ppppp', '⬛️🟩🟩⬛️⬛️'],
-  ['rockstar', 'roftware', '🟩🟩⬛️🟨⬛️🟨🟨⬛️'],
-  ['gigi', 'iiii', '⬛️🟩⬛️🟩'],
-  ['faker', 'apple', '🟨⬛️⬛️⬛️🟨'],
-  ['rockstar', 'rockbart', '🟩🟩🟩🟩⬛️🟨🟨🟨'],
+  ['apple', 'apply', 'GGGGX'],
+  ['abcde', 'eabcd', 'YYYYY'],
+  ['apple', 'ppppp', 'XGGXX'],
+  ['rockstar', 'roftware', 'GGXYXYYX'],
+  ['gigi', 'iiii', 'XGXG'],
+  ['faker', 'apple', 'YXXXY'],
+  ['rockstar', 'rockbart', 'GGGGXYYY'],
 ];
 
 let failed = false;

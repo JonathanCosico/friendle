@@ -1,16 +1,14 @@
+// const {emojiMap} = require('./emojimap');
+const emojis = require('./emojis.json');
+const emojiMap = new Map(Object.entries(emojis));
+
 function getResult(word, guess) {
   // evaluate the guess and return the emoji-formatted result
-  const { result, wrongLetters } = evaluateGuess(word, guess);
+  const result = evaluateGuess(word, guess);
 
-  return {correct: result === 'G'.repeat(word.length), result: result, wrongLetters: wrongLetters};
+  return {correct: result === 'G'.repeat(word.length), result: result};
 }
 
-function getInitialBoard(word) {
-  // Return an array of strings representing the initial state of the board
-  // for the given word, with each letter represented by a blank square.
-  const initialBoard = Array(word.length).fill('⬜️');
-  return `${initialBoard.join('')}  ${word.length} letter(s)`;
-}
 // Evaluate a guess against the target word and return a string of the same
 // length containing letters: 'G' (correct position), 'Y' (wrong position but
 // present elsewhere), or 'X' (not present).
@@ -22,7 +20,6 @@ function evaluateGuess(word, guess) {
 
   const result = Array(w.length).fill('X');
   const remaining = {};
-  const wrongLetters = Array();
 
   // First pass: mark greens and count remaining letters in target
   for (let i = 0; i < w.length; i++) {
@@ -42,41 +39,57 @@ function evaluateGuess(word, guess) {
       remaining[ch]--;
     } else {
       result[i] = 'X';
-      wrongLetters.push(ch);
     }
   }
 
-  return { result: result.join(''), wrongLetters: wrongLetters.join('') };
+  return result.join('');
 }
 
-// Example usages (uncomment to run as a quick check):
-// console.log(evaluateGuess('apple', 'apply')); // G G G G X -> 'GGGGX'
-// console.log(evaluateGuess('crate', 'trace')); // Y G G G G -> 'YGGGG'
-
-function formatResult(result) {
-  // If result is a Wordle-style string like 'GYXXY', map to emoji squares.
-  if (typeof result === 'string') {
-    const map = { X: '⬛️', G: '🟩', Y: '🟨' };
-    return result.split('').map((ch) => map[ch] || ch).join('');
+function getInitialBoard(word) {
+  board = '';
+  for (let i = 0; i < word.length; i++) {
+    if (!word[i].match(/^[a-z]$/i)) {
+      board += word[i];
+    } else {
+      board += '⬜️';
+    }
   }
+  return board + `  ${word.length} letter(s)`;
+}
+
+
+function printResult(guess, result) {
+  resultBoard = "";
+  for (let i = 0; i < guess.length; i++) {
+    const ch = guess[i];
+    resultBoard += getEmoji(ch, result[i]);
+  }
+  return resultBoard;
 }
 
 // build the string representation of the keyboard with used letters colored according to their status
 function printBoard(usedLetters) {
-  const KEYBOARD_LAYOUT = [" qwertyuiop", "  asdfghjkl", "   zxcvbnm"];
-  const GREEN = "\x1b[2;32m";
-  const YELLOW = "\x1b[2;33m";
-  const GREY = "\x1b[2;30m";
-  const RESET = "\x1b[0m";
-  return KEYBOARD_LAYOUT.map(row => {
-    return row.split('').map(ch => {
+  const KEYBOARD_LAYOUT = ["qwertyuiop", "asdfghjkl", "zxcvbnm"];
+  layout = "";
+  for (row=0; row<KEYBOARD_LAYOUT.length; row++) {
+    for (ch of KEYBOARD_LAYOUT[row]) {
       const status = usedLetters.get(ch);
-      if (status === 'G') return `${GREEN}${ch}${RESET}`;
-      if (status === 'Y') return `${YELLOW}${ch}${RESET}`;
-      if (status === 'X') return `${GREY}${ch}${RESET}`;
-      return ch;
-    }).join('');
-  }).join('\n');
+      layout += getEmoji(ch, status);
+    }
+    layout += '\n' + " ".repeat(4*row+4);
+  }
+  return layout;
 }
 
-module.exports = { getResult, getInitialBoard, formatResult, printBoard };
+// given emoji and status, return the corresponding emoji from the map
+// if given a non-alphabet character, return the letter plainly
+function getEmoji(ch, status) {
+  if (ch.match(/^[a-z]$/i) === null) return ch;
+
+  if (status === 'G') return emojiMap.get(`${ch}_G`);
+  else if (status === 'Y') return emojiMap.get(`${ch}_Y`);
+  else if (status === 'X') return emojiMap.get(`${ch}_X`);
+  else return emojiMap.get(`${ch}`);
+}
+
+module.exports = { getResult, getInitialBoard, printBoard, printResult };

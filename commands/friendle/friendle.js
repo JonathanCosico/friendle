@@ -1,7 +1,5 @@
-// create thread
-// send first msg in thread
-const {getInitialBoard, getResult, formatResult, printBoard} = require('../../game/game');
-const { SlashCommandBuilder, ThreadAutoArchiveDuration, MessageFlags, codeBlock} = require('discord.js');
+const { getInitialBoard, getResult, printBoard, printResult } = require('../../game/game');
+const { SlashCommandBuilder, ThreadAutoArchiveDuration, MessageFlags } = require('discord.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -18,24 +16,25 @@ module.exports = {
             name: threadName,
             autoArchiveDuration: ThreadAutoArchiveDuration.OneHour,
         });
+        // show initial board
         await thread.send(getInitialBoard(word));
 
-        // send ephemeral message to user that thread was created
+        // send ephemeral message to user that thread was created - does this bc otherwise the bot acts up
         await interaction.reply({content: `Thread created: ${thread.name}`, flags: MessageFlags.Ephemeral});
 
-        //listen for guesses in thread only if message is same length as word
+        // listen for guesses in thread only if message is same length as word
         const collectorFilter = (m) => m.content.length === word.length && m.author.id !== interaction.client.user.id;
         const collector = thread.createMessageCollector({filter: collectorFilter});
         const usedLetters = new Map();
 
         collector.on('collect', (message) => {
             const guess = message.content.toLowerCase();
-            const {correct, result, wrongLetters} = getResult(word, guess);
+            const {correct, result} = getResult(word, guess);
             if (correct) {
                 collector.stop();
                 thread.send({files: ["assets/yippee-happy.gif"]});
                 thread.send(`The word was ${word}.`);
-                thread.send(formatResult(result));
+                thread.send("guess:\n" + printResult(guess, result));
             } else {
                 // update usedLetters map to output formatted keyboard
                 for (i=0; i<result.length; i++) {
@@ -51,9 +50,8 @@ module.exports = {
                         usedLetters.set(ch, status);
                     }
                 }
-                console.log('Used letters:', Array.from(usedLetters.entries()));
-                thread.send(codeBlock('ansi', printBoard(usedLetters)));
-                thread.send(formatResult(result));
+                thread.send("guess:\n" + printResult(guess, result));
+                thread.send("board:\n" + printBoard(usedLetters));
             }
         });
     },

@@ -1,6 +1,6 @@
 const fs = require('node:fs');
 const path = require('node:path');
-const { Client, Collection, Events, GatewayIntentBits, MessageFlags } = require('discord.js');
+const { Client, Collection, Events, GatewayIntentBits, MessageFlags, Application, ApplicationEmojiManager, ApplicationEmoji, ClientApplication } = require('discord.js');
 const { token } = require('./config.json');
 
 
@@ -64,6 +64,6 @@ client.on(Events.InteractionCreate, async (interaction) => {
 	}
 });
 
-
 // Log in to Discord with your client's token
 client.login(token);
+
