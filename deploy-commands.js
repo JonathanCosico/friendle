@@ -33,7 +33,7 @@ rest
 	.then(() => console.log('Successfully deleted all application commands.'))
 	.catch(console.error);
 
-// and deploy your commands!
+// deploy commands!
 (async () => {
 	try {
 		console.log(`Started refreshing ${commands.length} application (/) commands.`);
